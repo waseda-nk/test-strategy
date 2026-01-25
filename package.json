@@ -9,7 +9,7 @@
     "format": "biome format .",
     "lint": "biome lint .",
     "check": "biome check .",
-    "check:fix": "biome format . --write"
+    "check:fix": "biome check . --write"
   },
   "dependencies": {
     "next": "16.1.4",

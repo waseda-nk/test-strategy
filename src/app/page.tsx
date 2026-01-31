@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import styles from "@/app/style.module.css";
+import { SideMenu } from "@/components/side-menu";
 
 // チェックリスト項目の型定義
 type ChecklistItem = {
@@ -38,10 +39,29 @@ const downloadTextFile = (
 
 // メインコンポーネント
 export default function App() {
-  // Refs - セクション参照
-  const introRef = useRef<HTMLDivElement | null>(null);
-  const detailRef = useRef<HTMLDivElement | null>(null);
-  const checklistRef = useRef<HTMLDivElement | null>(null);
+  // ナビゲーション用リスト項目
+  const links = [
+    {
+      key: "introduction",
+      title: "Introduction",
+      href: "#introduction",
+    },
+    {
+      key: "details",
+      title: "Details",
+      href: "#details",
+    },
+    {
+      key: "checklist",
+      title: "Checklist",
+      href: "#checklist",
+    },
+    {
+      key: "export",
+      title: "Export CSV",
+      href: "#export",
+    },
+  ];
 
   // Memoized - チェックリスト項目
   const checklistItems: ChecklistItem[] = useMemo(
@@ -71,11 +91,6 @@ export default function App() {
 
   // State - チェックリスト項目の状態管理
   const [items, setItems] = useState<ChecklistItem[]>(checklistItems);
-
-  // Function - セクションへのスクロール
-  const scrollToSection = (ref: React.RefObject<HTMLDivElement | null>) => {
-    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
 
   // Function - チェックリスト項目のチェック状態を切り替え
   const toggleItemChecked = (id: string) => {
@@ -108,36 +123,20 @@ export default function App() {
 
   // レンダリング
   return (
-    <>
-      <header className={styles.stickyHeader}>
-        <nav className={styles.navRow}>
-          <button type="button" onClick={() => scrollToSection(introRef)}>
-            概要
-          </button>
-          <button type="button" onClick={() => scrollToSection(detailRef)}>
-            詳細
-          </button>
-          <button type="button" onClick={() => scrollToSection(checklistRef)}>
-            チェックリスト
-          </button>
-          <button type="button" onClick={exportCsv}>
-            CSV出力
-          </button>
-        </nav>
-      </header>
-      <main>
-        <section ref={introRef} className={styles.section}>
-          <h1>テスト戦略</h1>
+    <div className={styles.grid}>
+      <div className={styles.sidebar}>
+        <SideMenu links={links} />
+      </div>
+      <main className={styles.main}>
+        <section id={"introduction"} className={styles.section}>
+          <h2>はじめに</h2>
           <p>
-            ここに「テスト戦略の説明（短め）」を入れます。スクロール/クリックで次の説明へ進み、
-            最後にチェックリストで確認・CSV出力します。
+            このアプリケーションは、テスト戦略を策定する際のチェックリストを提供します。以下のセクションで詳細を確認し、チェックリストを活用してください。
           </p>
-          <button type="button" onClick={() => scrollToSection(detailRef)}>
-            次へ（詳細へ）
-          </button>
+          <a href={"details"}>次へ（詳細へ）</a>
         </section>
 
-        <section ref={detailRef} className={styles.section}>
+        <section id={"details"} className={styles.section}>
           <h2>戦略の詳細</h2>
           <p>ここに続きの説明（長文でもOK）を入れます。</p>
           <ul>
@@ -146,12 +145,10 @@ export default function App() {
             <li>テストレベル（Unit/Integration/E2E）</li>
             <li>リスクベースの優先度</li>
           </ul>
-          <button type="button" onClick={() => scrollToSection(checklistRef)}>
-            次へ（チェックリストへ）
-          </button>
+          <a href={"checklist"}>次へ（チェックリストへ）</a>
         </section>
 
-        <section ref={checklistRef} className={styles.section}>
+        <section id={"checklist"} className={styles.section}>
           <h2>チェックリスト</h2>
           <p>以下のチェックリストで戦略を確認してください。</p>
           <ul>
@@ -172,11 +169,16 @@ export default function App() {
               </li>
             ))}
           </ul>
+        </section>
+
+        <section id={"export"} className={styles.section}>
+          <h2>CSVエクスポート</h2>
+          <p>チェックリストの内容をCSV形式でエクスポートします。</p>
           <button type="button" onClick={exportCsv}>
-            CSV出力
+            CSVをダウンロード
           </button>
         </section>
       </main>
-    </>
+    </div>
   );
 }
